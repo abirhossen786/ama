@@ -1,0 +1,8 @@
+LOCAL_IP=192.168.0.5
+ROBOT_IP=192.168.0.3
+ROBOT_ROS_PORT=11311
+ROBOT_KEY_PORT=5000
+ROS_ENVIRONMENT=/home/darkboy/catkin_ws
+MAPPING_RVIZ_FILE=/home/darkboy/catkin_ws/src/hospitalbot/config/map.rviz
+NAVIGATION_RVIZ_FILE=/home/darkboy/catkin_ws/src/hospitalbot/config/navigation.rviz
+

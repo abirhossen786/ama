@@ -1,0 +1,41 @@
+<launch>
+    <param name="robot_description" textfile="$(find hospitalbot)/hospitalbot.urdf"/>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+    <node pkg="hospitalbot" type="odometry_publisher" name="odometry_publisher" output="screen"/>
+    <node pkg="hospitalbot" type="camera_tf_publisher" name="camera_tf_publisher" output="screen"/>
+    <node pkg="hospitalbot" type="key_publisher.py" name="keyboard_driver" output="screen"/>
+    <node pkg="hospitalbot" type="command_twist_publisher" name="command_twist_publisher" output="screen">
+        <param name="linear_velocity" value="0.25"/>
+        <param name="angular_velocity" value="2.5"/>
+    </node>
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+        <param name="port" value="/dev/ttyACM0"/>
+        <param name="baud" value="115200"/>
+
+        <param name="ParameterInit" value="1"/>
+
+        <param name="MaximumPWM" value="255.0"/>
+        <param name="WheelSeparation" value="0.183"/>
+        <param name="WheelDiameter" value="0.06"/>
+        <param name="EncoderTicksPerRotation" value="333.0"/>
+        <param name="AccelerationMultiplier" value="3.0"/>
+
+        <param name="LeftMotorPWMPin" value="10"/>
+        <param name="LeftMotorAPin" value="24"/>
+        <param name="LeftMotorBPin" value="25"/>
+        <param name="RightMotorPWMPin" value="9"/>
+        <param name="RightMotorAPin" value="22"/>
+        <param name="RightMotorBPin" value="23"/>
+        <param name="LeftEncoderAPin" value="19"/>
+        <param name="LeftEncoderBPin" value="18"/>
+        <param name="RightEncoderAPin" value="2"/>
+        <param name="RightEncoderBPin" value="3"/>
+
+    </node>
+    <include file="$(find freenect_launch)/launch/freenect.launch"/>
+    <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
+        <remap from="image" to="/camera/depth/image_raw"/>
+        <param name="depth_registration" value="true"/>
+    </node>
+</launch>

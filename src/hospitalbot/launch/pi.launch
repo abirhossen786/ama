@@ -1,0 +1,3 @@
+<launch>
+    <node name="ui_node" pkg="hospitalbot" type="ui.js" output="screen"/>
+</launch>

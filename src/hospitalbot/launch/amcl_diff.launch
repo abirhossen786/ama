@@ -1,0 +1,95 @@
+<launch>
+  <arg name="scan_topic" default="scan"/>
+  <arg name="min_particles" default="500"/> <!-- 100 -->
+  <arg name="max_particles" default="5000"/>
+  <arg name="kld_err" default="0.05"/> <!-- 0.01 -->
+  <arg name="kld_z" default="0.99"/>
+  <arg name="update_min_d" default="0.2"/>
+  <arg name="update_min_a" default="0.5"/> <!-- π/6.0 radians -->
+  <arg name="resample_interval" default="1"/> <!-- 2 -->
+  <arg name="transform_tolerance" default="0.2"/> <!-- 0.1 seconds -->
+  <arg name="recovery_alpha_slow" default="0.0"/>
+  <arg name="recovery_alpha_fast" default="0.0"/>
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+  <arg name="gui_publish_rate" default="10.0"/> <!-- -1.0 Hz -->
+  <arg name="save_pose_rate" default="0.5"/>
+  <arg name="use_map_topic" default="false"/>
+  <arg name="first_map_only" default="false"/>
+  <arg name="laser_min_range" default="-1.0"/>
+  <arg name="laser_max_range" default="-1.0"/>
+  <arg name="laser_max_beams" default="30"/>
+  <arg name="laser_z_hit" default="0.5"/> <!-- 0.95 -->
+  <arg name="laser_z_short" default="0.05"/> <!-- 0.1 -->
+  <arg name="laser_z_max" default="0.05"/>
+  <arg name="laser_z_rand" default="0.5"/>
+  <arg name="laser_sigma_hit" default="0.2"/>
+  <arg name="laser_lambda_short" default="0.1"/>
+  <arg name="laser_likelihood_max_dist" default="2.0"/>
+  <arg name="laser_model_type" default="likelihood_field"/>
+  <arg name="odom_model_type" default="diff"/>
+  <arg name="odom_alpha1" default="0.2"/>
+  <arg name="odom_alpha2" default="0.2"/>
+  <arg name="odom_alpha3" default="0.8"/> <!-- 0.2 -->
+  <arg name="odom_alpha4" default="0.2"/>
+  <arg name="odom_alpha5" default="0.2"/>
+  <arg name="odom_frame_id" default="odom"/>
+  <arg name="base_frame_id" default="base_link"/>
+  <arg name="global_frame_id" default="map"/>
+  <arg name="tf_broadcast" default="true"/>
+
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <remap from="scan" to="$(arg scan_topic)"/>
+
+    <!-- Overall filter parameters -->
+    <param name="min_particles" value="$(arg min_particles)"/> <!-- Minimum allowed number of particles. -->
+    <param name="max_particles" value="$(arg max_particles)"/> <!-- Maximum allowed number of particles. -->
+    <param name="kld_err" value="$(arg kld_err)"/> <!-- Maximum error between the true distribution and the estimated distribution. -->
+    <param name="kld_z" value="$(arg kld_z)"/> <!-- Upper standard normal quantile for (1 - p), where p is the probability that the error on the estimated distrubition will be less than kld_err. -->
+    <param name="update_min_d" value="$(arg update_min_d)"/> <!-- Translational movement required before performing a filter update. -->
+    <param name="update_min_a" value="$(arg update_min_a)"/> <!-- Rotational movement required before performing a filter update. -->
+    <param name="resample_interval" value="$(arg resample_interval)"/> <!-- Number of filter updates required before resampling. -->
+    <param name="transform_tolerance" value="$(arg transform_tolerance)"/> <!-- Time with which to post-date the transform that is published, to indicate that this transform is valid into the future. -->
+    <param name="recovery_alpha_slow" value="$(arg recovery_alpha_slow)"/> <!-- Exponential decay rate for the slow average weight filter, used in deciding when to recover by adding random poses. A good value might be 0.001. -->
+    <param name="recovery_alpha_fast" value="$(arg recovery_alpha_fast)"/> <!-- Exponential decay rate for the fast average weight filter, used in deciding when to recover by adding random poses. A good value might be 0.1. -->
+    <param name="initial_pose_x" value="$(arg initial_pose_x)"/> <!-- Initial pose mean (x), used to initialize filter with Gaussian distribution. -->
+    <param name="initial_pose_y" value="$(arg initial_pose_y)"/> <!-- Initial pose mean (y), used to initialize filter with Gaussian distribution. -->
+    <param name="initial_pose_a" value="$(arg initial_pose_a)"/> <!-- Initial pose mean (yaw), used to initialize filter with Gaussian distribution. -->
+    <param name="gui_publish_rate" value="$(arg gui_publish_rate)"/> <!-- Maximum rate (Hz) at which scans and paths are published for visualization, -1.0 to disable. -->
+    <param name="save_pose_rate" value="$(arg save_pose_rate)"/> <!-- Maximum rate (Hz) at which to store the last estimated pose and covariance to the parameter server, in the variables ~initial_pose_* and ~initial_cov_*. This saved pose will be used on subsequent runs to initialize the filter. -1.0 to disable. -->
+    <param name="use_map_topic" value="$(arg use_map_topic)"/> <!-- When set to true, AMCL will subscribe to the map topic rather than making a service call to receive its map. -->
+    <param name="first_map_only" value="$(arg first_map_only)"/> <!-- When set to true, AMCL will only use the first map it subscribes to, rather than updating each time a new one is received. -->
+
+    <!-- Laser model parameters -->
+    <!-- Note that whichever mixture weights are in use should sum to 1. The beam model uses all 4: z_hit, z_short, z_max, and z_rand. The likelihood_field model uses only 2: z_hit and z_rand. -->
+    <param name="laser_min_range" value="$(arg laser_min_range)"/> <!-- Minimum scan range to be considered; -1.0 will cause the laser's reported minimum range to be used. -->
+    <param name="laser_max_range" value="$(arg laser_max_range)"/> <!-- Maximum scan range to be considered; -1.0 will cause the laser's reported maximum range to be used. -->
+    <param name="laser_max_beams" value="$(arg laser_max_beams)"/> <!-- How many evenly-spaced beams in each scan to be used when updating the filter. -->
+    <param name="laser_z_hit" value="$(arg laser_z_hit)"/> <!-- Mixture weight for the z_hit part of the model. -->
+    <param name="laser_z_short" value="$(arg laser_z_short)"/> <!-- Mixture weight for the z_short part of the model. -->
+    <param name="laser_z_max" value="$(arg laser_z_max)"/> <!-- Mixture weight for the z_max part of the model. -->
+    <param name="laser_z_rand" value="$(arg laser_z_rand)"/> <!-- Mixture weight for the z_rand part of the model. -->
+    <param name="laser_sigma_hit" value="$(arg laser_sigma_hit)"/> <!-- Standard deviation for Gaussian model used in z_hit part of the model. -->
+    <param name="laser_lambda_short" value="$(arg laser_lambda_short)"/> <!-- Exponential decay parameter for z_short part of model. -->
+    <param name="laser_likelihood_max_dist" value="$(arg laser_likelihood_max_dist)"/> <!-- Maximum distance to do obstacle inflation on map, for use in likelihood_field model. -->
+    <param name="laser_model_type" value="$(arg laser_model_type)"/> <!-- Which model to use, either beam, likelihood_field, or likelihood_field_prob (same as likelihood_field but incorporates the beamskip feature, if enabled). -->
+
+    <!-- Odometry model parameters -->
+    <!-- 
+      If ~odom_model_type is "diff" then we use the sample_motion_model_odometry algorithm from Probabilistic Robotics, p136; this model uses the noise parameters odom_alpha_1 through odom_alpha4, as defined in the book.
+      If ~odom_model_type is "omni" then we use a custom model for an omni-directional base, which uses odom_alpha_1 through odom_alpha_5. The meaning of the first four parameters is similar to that for the "diff" model. The fifth parameter capture the tendency of the robot to translate (without rotating) perpendicular to the observed direction of travel.
+      A bug was found and fixed. But fixing the old models would have changed or broken the localisation of already tuned robot systems, so the new fixed odometry models were added as new types "diff-corrected" and "omni-corrected". The default settings of the odom_alpha parameters only fit the old models, for the new model these values probably need to be a lot smaller, see http://answers.ros.org/question/227811/tuning-amcls-diff-corrected-and-omni-corrected-odom-models/.
+    -->
+    <param name="odom_model_type" value="$(arg odom_model_type)"/> <!-- Which model to use, either "diff", "omni", "diff-corrected" or "omni-corrected". -->
+    <param name="odom_alpha1" value="$(arg odom_alpha1)"/> <!-- Specifies the expected noise in odometry's rotation estimate from the rotational component of the robot's motion. -->
+    <param name="odom_alpha2" value="$(arg odom_alpha2)"/> <!-- Specifies the expected noise in odometry's rotation estimate from translational component of the robot's motion. -->
+    <param name="odom_alpha3" value="$(arg odom_alpha3)"/> <!-- Specifies the expected noise in odometry's translation estimate from the translational component of the robot's motion. -->
+    <param name="odom_alpha4" value="$(arg odom_alpha4)"/> <!-- Specifies the expected noise in odometry's translation estimate from the rotational component of the robot's motion. -->
+    <param name="odom_alpha5" value="$(arg odom_alpha5)"/> <!-- Translation-related noise parameter (only used if model is "omni"). -->
+    <param name="odom_frame_id" value="$(arg odom_frame_id)"/> <!-- Which frame to use for odometry. -->
+    <param name="base_frame_id" value="$(arg base_frame_id)"/> <!-- Which frame to use for the robot base. -->
+    <param name="global_frame_id" value="$(arg global_frame_id)"/> <!-- The name of the coordinate frame published by the localization system. -->
+    <param name="tf_broadcast" value="$(arg tf_broadcast)"/> <!-- Set this to false to prevent amcl from publishing the transform between the global frame and the odometry frame. -->
+  </node>
+</launch>

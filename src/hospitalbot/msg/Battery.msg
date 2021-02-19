@@ -1,0 +1,4 @@
+float32 voltage
+uint8 maximum_level
+uint8 current_level
+bool charging

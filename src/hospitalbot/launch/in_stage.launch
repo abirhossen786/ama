@@ -1,0 +1,71 @@
+<launch>
+    <arg name="headless" default="true"/>
+    <arg name="world_file" default="$(find hospitalbot)/map/world/hospital.world"/>
+    <param name="/use_sim_time" value="true"/>
+    <!--  ******************** Stage ********************  -->
+    <!-- 
+            Publishes transforms:
+            /base_link -> /base_laser
+            /base_footprint -> /base_link (identity)
+            /odom -> base_footprint
+            Publishes topics:
+            /odom : odometry data from the simulated odometry
+            /base_scan : laser data from the simulated laser
+            /base_pose_ground_truth : the ground truth pose
+            Parameters:
+            base_watchdog_timeout : time (s) after receiving the last command on cmd_vel before stopping the robot
+            Args:
+            -g : run in headless mode.
+    --> 
+    <!--  Run With GUI  -->
+    <node pkg="stage_ros" type="stageros" name="stageros" if="$(eval not headless)" args="$(eval arg('world_file'))">
+        <param name="base_watchdog_timeout" value="60.0"/>
+        <remap from="base_scan" to="laser_scan"/>
+    </node>
+    <!--  Run Headless  -->
+    <node pkg="stage_ros" type="stageros" name="stageros" if="$(eval headless)" args="$(eval '-g ' + arg('world_file'))">
+        <param name="base_watchdog_timeout" value="60.0"/>
+        <remap from="base_scan" to="laser_scan"/>
+    </node>
+
+    <!--  ***************** Robot Model *****************  -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find hospitalbot)/urdf/hospitalbot.urdf.xacro'"/>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!--  ***************** Velocity Control *****************  -->
+    <node pkg="hospitalbot" type="key_publisher.py" name="keyboard_driver" output="screen"/>
+    <node pkg="hospitalbot" type="command_twist_publisher" name="command_twist_publisher" output="screen">
+        <param name="linear_velocity" value="0.25"/>
+        <param name="angular_velocity" value="1.0"/>
+    </node>
+
+    <!--  ************** Navigation  ***************  -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <rosparam file="$(find hospitalbot)/param/costmap_common_params.yaml" command="load" ns="global_costmap"	/>
+        <rosparam file="$(find hospitalbot)/param/costmap_common_params.yaml" command="load" ns="local_costmap"	/>
+        <rosparam file="$(find hospitalbot)/param/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find hospitalbot)/param/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find hospitalbot)/param/base_local_planner_params.yaml" command="load" />
+        <rosparam file="$(find hospitalbot)/param/global_planner_params.yaml" command="load" />
+        <rosparam file="$(find hospitalbot)/param/move_base_params.yaml" command="load" />
+        <rosparam file="$(find hospitalbot)/param/navfn_global_planner_params.yaml" command="load" />
+	</node>
+
+    <!--  ****** Maps *****  -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find	hospitalbot)/map/map.yaml"/>
+    
+    <include file="$(find hospitalbot)/launch/amcl_diff.launch">
+        <arg name="scan_topic" value="laser_scan"/>
+        <arg name="use_map_topic" value="true"/>
+        <arg name="base_frame_id" value="base_footprint"/>
+    </include>
+    <node pkg="rviz" type="rviz" name="rviz" if="$(eval not headless)" args="-d $(find hospitalbot)/config/navigation.rviz"/>
+    
+    <!--  ****** Miscellaneous *****  -->
+    <node pkg="hospitalbot" type="proximity_publisher" name="proximity_publisher" output="screen"/>
+    <node name="ui_node" pkg="hospitalbot" type="ui.js" output="screen"/>
+    <node pkg="hospitalbot" type="state_machine" name="state_machine" output="screen">
+        <param name="initial_calibration" type="bool" value="false"/>
+    </node>
+</launch>

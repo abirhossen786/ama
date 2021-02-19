@@ -1,0 +1,165 @@
+footprint: [[0.381, 0.4572], [0.381, -0.4572], [-0.381, -0.4572], [-0.381, 0.4572]]
+
+# robot_radius: 0.20
+
+map_type: costmap
+
+obstacle_layer:
+    enabled: true
+    track_unknown_space: true #true needed for disabling global path planning through unknown space
+    unknown_threshold: 15
+    mark_threshold: 0
+    combination_method: 1
+    origin_z: 0.0
+    z_resolution: 0.2
+    z_voxels: 2
+    publish_voxel_map: false
+    observation_sources: camera laser proximity_front_left_four proximity_front_left_three proximity_front_left_two proximity_front_left_one proximity_front_middle proximity_front_right_one proximity_front_right_two proximity_front_right_three proximity_front_right_four proximity_rear_middle
+    laser:
+        topic: laser_scan
+        sensor_frame: laser
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 5.0
+        raytrace_range: 6.0
+        inf_is_valid: true #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_left_four:
+        topic: /hospitalbot/proximity/front/left/four
+        sensor_frame: proximity_front_left_four_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_left_three:
+        topic: /hospitalbot/proximity/front/left/three
+        sensor_frame: proximity_front_left_three_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_left_two:
+        topic: /hospitalbot/proximity/front/left/two
+        sensor_frame: proximity_front_left_two_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_left_one:
+        topic: /hospitalbot/proximity/front/left/one
+        sensor_frame: proximity_front_left_one_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_middle:
+        topic: /hospitalbot/proximity/front/middle
+        sensor_frame: proximity_front_middle_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_right_one:
+        topic: /hospitalbot/proximity/front/right/one
+        sensor_frame: proximity_front_right_one_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_right_two:
+        topic: /hospitalbot/proximity/front/right/two
+        sensor_frame: proximity_front_right_two_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_right_three:
+        topic: /hospitalbot/proximity/front/right/three
+        sensor_frame: proximity_front_right_three_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_front_right_four:
+        topic: /hospitalbot/proximity/front/right/four
+        sensor_frame: proximity_front_right_four_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+    proximity_rear_middle:
+        topic: /hospitalbot/proximity/rear/middle
+        sensor_frame: proximity_rear_middle_link
+        observation_persistence: 0.0 #How long to keep each sensor reading in seconds. A value of 0.0 will only keep the most recent reading.
+        expected_update_rate: 0.0 #How often to expect a reading from a sensor in seconds. A value of 0.0 will allow infinite time between readings.
+        data_type: LaserScan
+        marking: true
+        clearing: true
+        max_obstacle_height: 3.0
+        min_obstacle_height: 0.0
+        obstacle_range: 0.88
+        raytrace_range: 1.5
+        inf_is_valid: false #Allows for Inf values in "LaserScan" observation messages. The Inf values are converted to the laser maximum range.
+
+inflation_layer:
+    enabled: true
+    cost_scaling_factor: 5.0 # exponential rate at which the obstacle cost drops off (default: 10)
+    inflation_radius: 0.3 # max. distance from an obstacle at which costs are incurred for planning paths.

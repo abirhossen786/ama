@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="hospitalbot">
+    <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+    </material>
+    <material name="orange">
+        <color rgba="1.0 0.65 0.0 1"/>
+    </material>
+    <material name="blue">
+        <color rgba="0 0 1 1"/>
+    </material>
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+    <material name="green">
+        <color rgba="0 1 0 1"/> 
+    </material>
+    <material name="yellow"> 
+        <color rgba="1 1 0 1"/> 
+    </material>
+
+    <xacro:property name="base_x" value="0.7366"/>
+    <xacro:property name="base_y" value="0.9144"/>
+    <xacro:property name="base_z" value="0.3048"/>
+    <xacro:property name="base_mass" value="0.3"/>
+
+    <xacro:property name="body_x" value="0.6096"/>
+    <xacro:property name="body_y" value="0.9144"/>
+    <xacro:property name="body_z" value="0.93"/>
+    <xacro:property name="body_mass" value="0.3"/>
+
+    <xacro:property name="head_x" value="0.0254"/>
+    <xacro:property name="head_y" value="0.9144"/>
+    <xacro:property name="head_z" value="0.5"/>
+    <xacro:property name="head_mass" value="0.8"/>
+
+    <xacro:property name="imu_x" value="0.03"/>
+    <xacro:property name="imu_y" value="0.01"/>
+    <xacro:property name="imu_z" value="0.001"/>
+    <xacro:property name="imu_mass" value="1e-5"/>
+
+    <xacro:property name="wheel_radius" value="0.0762"/>
+    <xacro:property name="wheel_length" value="0.0508"/>
+    <xacro:property name="wheel_mass" value="0.125"/>
+
+    <xacro:property name="laser_radius" value="0.038"/>
+    <xacro:property name="laser_length" value="0.0205"/>
+    <xacro:property name="laser_mass" value="0.34"/>
+
+    <xacro:property name="wheel_offset_x" value="0.14"/>
+    <xacro:property name="wheel_offset_y" value="0.32"/>
+
+    <xacro:macro name="box_block" params="name origin_xyz origin_rpy box_x box_y box_z mass='1e-5' color=''">
+        <link name="${name}">
+            <collision>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <geometry>
+                    <box size="${box_x} ${box_y} ${box_z}"/>
+                </geometry>
+            </collision>
+            <visual>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <geometry>
+                    <box size="${box_x} ${box_y} ${box_z}"/>
+                </geometry>
+                <xacro:if value="${color != ''}">
+                    <material name="${color}"/>
+                </xacro:if>
+            </visual>
+            <inertial>
+                <mass value="${mass}"/>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <inertia ixx="${(float(mass)/12)*(float(box_y)*float(box_y)+float(box_z)*float(box_z))}" ixy="0" ixz="0" iyy="${(float(mass)/12)*(float(box_x)*float(box_x)+float(box_z)*float(box_z))}" iyz="0" izz="${(float(mass)/12)*(float(box_x)*float(box_x)+float(box_y)*float(box_y))}"/>
+            </inertial>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_block" params="name origin_xyz origin_rpy cylinder_length cylinder_radius mass='1e-5' color=''">
+        <link name="${name}">
+            <collision>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <geometry>
+                    <cylinder length="${cylinder_length}" radius="${cylinder_radius}"/>
+                </geometry>
+            </collision>
+            <visual>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <geometry>
+                    <cylinder length="${cylinder_length}" radius="${cylinder_radius}"/>
+                </geometry>
+                <xacro:if value="${color != ''}">
+                    <material name="${color}"/>
+                </xacro:if>
+            </visual>
+            <inertial>
+                <mass value="${mass}"/>
+                <origin	xyz="${origin_xyz}" rpy="${origin_rpy}"/>
+                <inertia ixx="${(float(mass)/12)*(3*float(cylinder_radius)*float(cylinder_radius)+float(cylinder_length)*float(cylinder_length))}" ixy="0" ixz="0" iyy="${(float(mass)/12)*(3*float(cylinder_radius)*float(cylinder_radius)+float(cylinder_length)*float(cylinder_length))}" iyz="0" izz="${float(mass)*float(cylinder_radius)*float(cylinder_radius)/2}"/>
+            </inertial>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="fixed_joint_block" params="name parent child origin_xyz origin_rpy">
+        <joint name="${name}" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <origin rpy="${origin_rpy}" xyz="${origin_xyz}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="continuous_joint_block" params="name parent child origin_xyz origin_rpy axis_xyz">
+        <joint name="${name}" type="continuous">
+            <axis xyz="${axis_xyz}"/>
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <origin rpy="${origin_rpy}" xyz="${origin_xyz}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:box_block name="base_footprint" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" box_x="0.0001" box_y="0.0001" box_z="0.0001"/>
+    <xacro:box_block name="base_link" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" box_x="${base_x}" box_y="${base_y}" box_z="${base_z}" mass="${base_mass}" color="silver"/>
+    <xacro:box_block name="body_link" origin_xyz="0.0 0.0 0.465" origin_rpy="0.0 0.0 0.0" box_x="${body_x}" box_y="${body_y}" box_z="${body_z}" mass="${body_mass}" color="orange"/>
+    <xacro:box_block name="imu" origin_xyz="0.0 0.0 0.0005" origin_rpy="0.0 0.0 0.0" box_x="${imu_x}" box_y="${imu_y}" box_z="${imu_z}" mass="${imu_mass}" color="black"/>
+    <xacro:box_block name="head_link" origin_xyz="0.0 0.0 0.25" origin_rpy="0.0 0.0 0.0" box_x="${head_x}" box_y="${head_y}" box_z="${head_z}" mass="${head_mass}" color="blue"/>
+    <link name="proximity_front_middle_link"/>
+    <link name="proximity_front_left_one_link"/>
+    <link name="proximity_front_left_two_link"/>
+    <link name="proximity_front_left_three_link"/>
+    <link name="proximity_front_left_four_link"/>
+    <link name="proximity_front_right_one_link"/>
+    <link name="proximity_front_right_two_link"/>
+    <link name="proximity_front_right_three_link"/>
+    <link name="proximity_front_right_four_link"/>
+    <link name="proximity_rear_middle_link"/>
+    <xacro:cylinder_block name="laser" origin_xyz="0.0 0.0 0.01025" origin_rpy="0.0 0.0 0.0" cylinder_length="${laser_length}" cylinder_radius="${laser_radius}" mass="${laser_mass}" color="yellow"/>
+    <xacro:cylinder_block name="right_front_wheel" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" cylinder_length="${wheel_length}" cylinder_radius="${wheel_radius}" mass="${wheel_mass}" color="black"/>
+    <xacro:cylinder_block name="right_rear_wheel" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" cylinder_length="${wheel_length}" cylinder_radius="${wheel_radius}" mass="${wheel_mass}" color="black"/>
+    <xacro:cylinder_block name="left_front_wheel" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" cylinder_length="${wheel_length}" cylinder_radius="${wheel_radius}" mass="${wheel_mass}" color="black"/>
+    <xacro:cylinder_block name="left_rear_wheel" origin_xyz="0.0 0.0 0.0" origin_rpy="0.0 0.0 0.0" cylinder_length="${wheel_length}" cylinder_radius="${wheel_radius}" mass="${wheel_mass}" color="black"/>
+    
+    <xacro:fixed_joint_block name="footprint_base_joint" parent="base_footprint" child="base_link" origin_xyz="0.0 0.0 ${wheel_radius+(base_z/2)}" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_imu_joint" parent="base_link" child="imu" origin_xyz="${base_x/2-0.2286} 0.0 ${-base_z/2}" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_body_joint" parent="base_link" child="body_link" origin_xyz="${-(base_x-body_x)/2} 0.0 ${base_z/2}" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="body_head_joint" parent="body_link" child="head_link" origin_xyz="0.0 0.0 ${body_z}" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="head_laser_joint" parent="head_link" child="laser" origin_xyz="0.0 0.0 ${head_z}" origin_rpy="0.0 0.0 3.14159"/>
+    
+    <xacro:fixed_joint_block name="base_proximity_front_left_four_joint" parent="base_link" child="proximity_front_left_four_link" origin_xyz="${body_x/2+0.09-(base_x-body_x)/2} 0.42 0.0" origin_rpy="0.0 0.0 1.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_left_three_joint" parent="base_link" child="proximity_front_left_three_link" origin_xyz="${body_x/2+0.05-(base_x-body_x)/2} 0.30 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_left_two_joint" parent="base_link" child="proximity_front_left_two_link" origin_xyz="${body_x/2+0.025-(base_x-body_x)/2} 0.20 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_left_one_joint" parent="base_link" child="proximity_front_left_one_link" origin_xyz="${body_x/2+0.02-(base_x-body_x)/2} 0.10 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_middle_joint" parent="base_link" child="proximity_front_middle_link" origin_xyz="${body_x/2-(base_x-body_x)/2} 0.0 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_right_one_joint" parent="base_link" child="proximity_front_right_one_link" origin_xyz="${body_x/2+0.02-(base_x-body_x)/2} -0.10 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_right_two_joint" parent="base_link" child="proximity_front_right_two_link" origin_xyz="${body_x/2+0.025-(base_x-body_x)/2} -0.20 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_right_three_joint" parent="base_link" child="proximity_front_right_three_link" origin_xyz="${body_x/2+0.05-(base_x-body_x)/2} -0.30 0.0" origin_rpy="0.0 0.0 0.0"/>
+    <xacro:fixed_joint_block name="base_proximity_front_right_four_joint" parent="base_link" child="proximity_front_right_four_link" origin_xyz="${body_x/2+0.09-(base_x-body_x)/2} -0.42 0.0" origin_rpy="0.0 0.0 -1.0"/>
+    <xacro:fixed_joint_block name="base_proximity_rear_middle_joint" parent="base_link" child="proximity_rear_middle_link" origin_xyz="${-body_x/2-(base_x-body_x)/2} 0.0 0.0" origin_rpy="0.0 0.0 3.141592654"/>
+
+    <xacro:continuous_joint_block name="right_front_wheel_joint" parent="base_link" child="right_front_wheel" origin_xyz="${wheel_offset_x} ${-wheel_offset_y} ${-base_z/2}" origin_rpy="-1.5708 0 0" axis_xyz="0 0 1"/>
+    <xacro:continuous_joint_block name="right_rear_wheel_joint" parent="base_link" child="right_rear_wheel" origin_xyz="${-wheel_offset_x} ${-wheel_offset_y} ${-base_z/2}" origin_rpy="-1.5708 0 0" axis_xyz="0 0 1"/>
+    <xacro:continuous_joint_block name="left_front_wheel_joint" parent="base_link" child="left_front_wheel" origin_xyz="${wheel_offset_x} ${wheel_offset_y} ${-base_z/2}" origin_rpy="-1.5708 0 0" axis_xyz="0 0 1"/>
+    <xacro:continuous_joint_block name="left_rear_wheel_joint" parent="base_link" child="left_rear_wheel" origin_xyz="${-wheel_offset_x} ${wheel_offset_y} ${-base_z/2}" origin_rpy="-1.5708 0 0" axis_xyz="0 0 1"/>
+</robot>

@@ -1,0 +1,4 @@
+<launch>
+    <node name="launch_manager" pkg="hospitalbot" type="launch_manager" output="screen"/>
+    <node name="ui_node" pkg="hospitalbot" type="ui.js" output="screen"/>
+</launch>

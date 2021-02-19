@@ -1,0 +1,10 @@
+
+\.vscode/
+
+map/
+
+src/frontend/node_modules/
+
+src/frontend/angular-src/node_modules/
+
+src/frontend/public/
