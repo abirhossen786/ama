@@ -1,8 +1,0 @@
-prefix=/home/darkboy/catkin_ws/devel
-
-Name: basics
-Description: Description of basics
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/darkboy/catkin_ws/devel/lib 
-Requires: 
