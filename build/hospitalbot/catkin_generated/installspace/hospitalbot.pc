@@ -1,8 +1,0 @@
-prefix=/home/darkboy/catkin_ws/install
-
-Name: hospitalbot
-Description: Description of hospitalbot
-Version: 0.0.0
-Cflags: -I/home/darkboy/catkin_ws/install/include
-Libs: -L/home/darkboy/catkin_ws/install/lib 
-Requires: message_runtime
